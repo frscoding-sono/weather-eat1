@@ -6,7 +6,7 @@
   import Clouds from './Clouds.svelte';
   import Thunderstorm from './Thunderstorm.svelte';
 
-  const city = 'Seoul'; 
+  const city = 'Seoul';
 
   let weatherData: any = null;
   let loading = true;
@@ -16,6 +16,7 @@
   let foodInterval: any;
 
   // --- AI BANANA GENESIS ---
+  // A single, powerful image to define the app's identity.
   const imageAIBanana = 'https://images.unsplash.com/photo-1528825871115-3581a5387919?q=80&w=2815&auto=format&fit=crop';
 
   type FoodDetails = { preText: string; items: string[]; postText: string; };
@@ -56,12 +57,10 @@
 
   onMount(async () => {
     try {
-      // 올바른 백엔드 주소인 /weather로 날씨 데이터를 요청합니다.
-      const response = await fetch('/weather');
+      const response = await fetch(`/weather?city=${city}`);
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || `Failed to fetch weather data. Status: ${response.status}`;
-        throw new Error(errorMessage);
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch weather data: ${response.status} ${errorText}`);
       }
       weatherData = await response.json();
     } catch (e: any) {
