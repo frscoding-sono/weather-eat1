@@ -6,7 +6,7 @@
   import Clouds from './Clouds.svelte';
   import Thunderstorm from './Thunderstorm.svelte';
 
-  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+  const apiKey = "b213b0a3345a30931062c5b736b75354";
   const city = 'Seoul';
 
   let weatherData: any = null;
