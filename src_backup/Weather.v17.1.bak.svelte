@@ -6,64 +6,72 @@
   import Clouds from './Clouds.svelte';
   import Thunderstorm from './Thunderstorm.svelte';
 
-  const city = 'Seoul'; 
+  const apiKey = '2f8ab9ab2c39b14046b20c31b1701889';
+  const city = 'Seoul';
 
   let weatherData: any = null;
   let loading = true;
   let error: string | null = null;
 
-  let foodIndex: number = 0;
+  let currentFood: string = '...';
+  let nextFood: string = '';
+  let foodAnimationKey: number = 0;
   let foodInterval: any;
 
-  // --- AI BANANA GENESIS ---
-  const imageAIBanana = 'https://images.unsplash.com/photo-1528825871115-3581a5387919?q=80&w=2815&auto=format&fit=crop';
+  const imageClearDay = 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?q=80&w=2940&auto=format&fit=crop';
+  const imageCloudsDay = 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=2851&auto=format&fit=crop';
+  const imageRainDay = 'https://images.unsplash.com/photo-1515694346937-94d85e41e620?q=80&w=2835&auto=format&fit=crop';
+  const imageSnowDay = 'https://images.unsplash.com/photo-1517299321609-5248554c157a?q=80&w=2942&auto=format&fit=crop';
+  const imageThunderstorm = 'https://images.unsplash.com/photo-1561485132-5942360b6c28?q=80&w=2874&auto=format&fit=crop';
+  const imageClearNight = 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=2942&auto=format&fit=crop';
+  const imageCloudsNight = 'https://images.unsplash.com/photo-1532174362380-c1b73c4f7495?q=80&w=2938&auto=format&fit=crop';
+  const imageRainNight = 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=2835&auto=format&fit=crop';
+  const imageSnowNight = 'https://images.unsplash.com/photo-1482597924299-72d56d214a13?q=80&w=2942&auto=format&fit=crop';
+  const imageDefault = 'https://images.unsplash.com/photo-1506784983877-45594efa4c85?q=80&w=2940&auto=format&fit=crop';
 
   type FoodDetails = { preText: string; items: string[]; postText: string; };
   type WeatherLook = { background: string; icon: string; overlay: string; };
 
   const weatherConditions: { [key: string]: { day: WeatherLook; night: WeatherLook; food: FoodDetails; } } = {
     Clear: {
-      day: { background: imageAIBanana, icon: '☀️', overlay: 'overlay-clear-day' },
-      night: { background: imageAIBanana, icon: '🌙', overlay: 'overlay-clear-night' },
+      day: { background: imageClearDay, icon: '☀️', overlay: 'overlay-clear-day' },
+      night: { background: imageClearNight, icon: '🌙', overlay: 'overlay-clear-night' },
       food: { preText: '상쾌한 날엔 ', items: ['시원한 냉면', '과일주스', '신선한 샐러드'], postText: ' 어떠세요?' }
     },
     Clouds: {
-      day: { background: imageAIBanana, icon: '☁️', overlay: 'overlay-clouds-day' },
-      night: { background: imageAIBanana, icon: '☁️', overlay: 'overlay-clouds-night' },
+      day: { background: imageCloudsDay, icon: '☁️', overlay: 'overlay-clouds-day' },
+      night: { background: imageCloudsNight, icon: '☁️', overlay: 'overlay-clouds-night' },
       food: { preText: '구름 낀 날엔 ', items: ['따뜻한 라떼', '핫초코', '카푸치노'], postText: '와 함께.' }
     },
     Rain: {
-      day: { background: imageAIBanana, icon: '🌧️', overlay: 'overlay-rain-day' },
-      night: { background: imageAIBanana, icon: '🌧️', overlay: 'overlay-rain-night' },
+      day: { background: imageRainDay, icon: '🌧️', overlay: 'overlay-rain-day' },
+      night: { background: imageRainNight, icon: '🌧️', overlay: 'overlay-rain-night' },
       food: { preText: '비 오는 날엔 뜨끈한 ', items: ['칼국수', '수제비', '부침개'], postText: '이죠!' }
     },
     Snow: {
-      day: { background: imageAIBanana, icon: '❄️', overlay: 'overlay-snow-day' },
-      night: { background: imageAIBanana, icon: '❄️', overlay: 'overlay-snow-night' },
+      day: { background: imageSnowDay, icon: '❄️', overlay: 'overlay-snow-day' },
+      night: { background: imageSnowNight, icon: '❄️', overlay: 'overlay-snow-night' },
       food: { preText: '눈 오는 날엔 ', items: ['따끈한 어묵탕', '달콤한 호떡', '김이 나는 찐빵'], postText: '으로 몸을 녹여보세요.' }
     },
     Thunderstorm: {
-      day: { background: imageAIBanana, icon: '⚡️', overlay: 'overlay-thunderstorm' },
-      night: { background: imageAIBanana, icon: '⚡️', overlay: 'overlay-thunderstorm' },
+      day: { background: imageThunderstorm, icon: '⚡️', overlay: 'overlay-thunderstorm' },
+      night: { background: imageThunderstorm, icon: '⚡️', overlay: 'overlay-thunderstorm' },
       food: { preText: '번개 치는 날엔 ', items: ['매운 짬뽕', '따끈한 부대찌개', '치킨에 맥주'], postText: ' 한 잔!' }
     },
     Default: {
-      day: { background: imageAIBanana, icon: '🤔', overlay: 'overlay-default' },
-      night: { background: imageAIBanana, icon: '🤔', overlay: 'overlay-default' },
+      day: { background: imageDefault, icon: '🤔', overlay: 'overlay-default' },
+      night: { background: imageDefault, icon: '🤔', overlay: 'overlay-default' },
       food: { preText: '오늘 날씨엔 ', items: ['든든한 국밥', '매콤한 떡볶이', '샌드위치'], postText: '이 좋겠네요.' }
     },
   };
 
   onMount(async () => {
     try {
-      // 올바른 백엔드 주소인 /weather로 날씨 데이터를 요청합니다.
-      const response = await fetch('/weather');
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || `Failed to fetch weather data. Status: ${response.status}`;
-        throw new Error(errorMessage);
-      }
+      if (apiKey === 'YOUR_API_KEY') throw new Error('API key is not set.');
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+      if (!response.ok) throw new Error('Failed to fetch weather data.');
       weatherData = await response.json();
+      startFoodRotation();
     } catch (e: any) {
       error = e.message;
     } finally {
@@ -75,13 +83,35 @@
     clearInterval(foodInterval);
   });
 
-  function changeFood() {
-    if (!foodDetails || foodDetails.items.length === 0) return;
-    foodIndex = (foodIndex + 1) % foodDetails.items.length;
+  function startFoodRotation() {
+    if (!foodDetails) return;
+    const items = foodDetails.items;
+    if (items.length > 0) {
+      currentFood = items[0];
+      let currentIndex = 0;
+      foodInterval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % items.length;
+        changeFood(items[currentIndex]);
+      }, 4000);
+    }
+  }
+
+  function changeFood(newItem: string) {
+    if (currentFood !== newItem) {
+      nextFood = newItem;
+      foodAnimationKey++;
+    }
   }
 
   function manualChangeFood() {
-    changeFood();
+    if (!foodDetails) return;
+    const items = foodDetails.items;
+    const currentIndex = items.indexOf(currentFood);
+    const nextIndex = (currentIndex + 1) % items.length;
+    changeFood(items[nextIndex]);
+    
+    clearInterval(foodInterval);
+    startFoodRotation();
   }
 
   $: condition = weatherData ? weatherData.weather[0].main : 'Default';
@@ -89,20 +119,10 @@
   $: conditionDetails = weatherConditions[condition] || weatherConditions.Default;
   $: weatherLook = conditionDetails[timeOfDay];
   $: foodDetails = conditionDetails.food;
-  $: displayedFood = foodDetails ? foodDetails.items[foodIndex] : '...';
   $: temp = weatherData ? weatherData.main.temp : null;
   $: feelsLike = weatherData ? weatherData.main.feels_like : null;
   $: humidity = weatherData ? weatherData.main.humidity : null;
   $: windSpeed = weatherData ? weatherData.wind.speed : null;
-
-  $: {
-    if (foodDetails) {
-        clearInterval(foodInterval);
-        if (foodDetails.items.length > 1) {
-            foodInterval = setInterval(changeFood, 4000);
-        }
-    }
-  }
 
 </script>
 
@@ -135,11 +155,12 @@
             <span>{foodDetails.preText}</span>
             <button class="food-pulsar-button" on:click={manualChangeFood}>
               <div class="button-content-wrapper">
-                {#key foodIndex}
+                {#key foodAnimationKey}
                   <span class="food-item" 
                     in:slide={{ delay: 300, duration: 400, axis: 'y' }} 
-                    out:slide={{ duration: 300, axis: 'y' }}>
-                    {displayedFood}
+                    out:slide={{ duration: 300, axis: 'y' }}
+                    on:outroend={() => { currentFood = nextFood; }}>
+                    {currentFood}
                   </span>
                 {/key}
               </div>
@@ -179,7 +200,7 @@
   .detail-value { font-size: 1.25rem; font-weight: bold; margin-top: 0.25rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
   .detail-label { font-size: 0.8rem; opacity: 0.8; margin-top: 0.1rem; }
   
-  /* Pulsar Food Button Styles (Your Vision) */
+  /* Pulsar Food Button Styles (Deep Dive Edition) */
   .pulsar-food-container {
     margin-top: 2.5rem;
     display: flex;
@@ -200,9 +221,8 @@
     border-right: 2px solid rgba(0, 0, 0, 0.4);
     color: white;
     font-weight: 700;
-    border-radius: 0.8rem; 
-    padding: 0.6rem 2rem; /* YOUR ADJUSTMENT */
-    min-width: 200px;      /* YOUR ADJUSTMENT */
+    border-radius: 0.8rem; /* Sharper edges */
+    padding: 0.5rem 1.5rem;
     margin: 0 0.5rem;
     cursor: pointer;
     position: relative;
@@ -234,11 +254,15 @@
     position: absolute;
     white-space: nowrap;
     font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 800; /* Bolder for more pronounced effect */
     text-shadow: 
+      /* Top-light for 3D effect */
       0px 1px 2px rgba(255, 255, 255, 0.3),
+      /* Bottom-shadow for depth */
       0px -1px 2px rgba(0, 0, 0, 0.6),
+      /* General shadow for readability */
       0 0 5px rgba(0, 0, 0, 0.8),
+      /* Nanobanana glow */
       0 0 20px rgba(192, 228, 255, 0.4);
   }
 

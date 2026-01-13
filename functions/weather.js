@@ -1,10 +1,8 @@
 export async function onRequest(context) {
   // context에서 환경 변수와 같은 실행 컨텍스트 정보를 가져옵니다.
-  // const { env } = context;
-  // const apiKey = env.WEATHER_API_KEY;
-
-  // AIBANANA: Hardcode the key for diagnosis.
-  const apiKey = "2f8ab9ab2c39b14046b20c31b1701889";
+  const { env } = context;
+  // 최종 진단을 위해 .dev.vars 사용을 일시적으로 중단하고 API 키를 직접 하드코딩합니다.
+  const apiKey = "9b10e3118ad8eb9551ae03b2c7fadd02";
 
   const city = (new URL(context.request.url)).searchParams.get('city') || 'Seoul';
 
@@ -18,8 +16,7 @@ export async function onRequest(context) {
     if (!apiResponse.ok) {
       const errorText = await apiResponse.text();
       console.error(`OpenWeatherMap API Error: ${errorText}`);
-      // AIBANANA: Add the key to the error message for debugging.
-      throw new Error(`OpenWeatherMap API 요청 실패. Status: ${apiResponse.status}. 사용된 키: ${apiKey}`);
+      throw new Error(`OpenWeatherMap API 요청 실패. Status: ${apiResponse.status}.`);
     }
     
     // API로부터 받은 데이터를 JSON 형식으로 파싱합니다.
