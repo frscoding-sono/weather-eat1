@@ -6,7 +6,7 @@
   import Clouds from './Clouds.svelte';
   import Thunderstorm from './Thunderstorm.svelte';
 
-  const apiKey = '2f8ab9ab2c39b14046b20c31b1701889';
+  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
   const city = 'Seoul';
 
   let weatherData: any = null;
@@ -16,38 +16,42 @@
   let foodIndex: number = 0;
   let foodInterval: any;
 
+  // --- AI BANANA GENESIS ---
+  // A single, powerful image to define the app's identity.
+  const imageAIBanana = 'https://images.unsplash.com/photo-1528825871115-3581a5387919?q=80&w=2815&auto=format&fit=crop';
+
   type FoodDetails = { preText: string; items: string[]; postText: string; };
-  type WeatherLook = { icon: string; overlay: string; };
+  type WeatherLook = { background: string; icon: string; overlay: string; };
 
   const weatherConditions: { [key: string]: { day: WeatherLook; night: WeatherLook; food: FoodDetails; } } = {
     Clear: {
-      day: { icon: '☀️', overlay: 'overlay-clear-day' },
-      night: { icon: '🌙', overlay: 'overlay-clear-night' },
+      day: { background: imageAIBanana, icon: '☀️', overlay: 'overlay-clear-day' },
+      night: { background: imageAIBanana, icon: '🌙', overlay: 'overlay-clear-night' },
       food: { preText: '상쾌한 날엔 ', items: ['시원한 냉면', '과일주스', '신선한 샐러드'], postText: ' 어떠세요?' }
     },
     Clouds: {
-      day: { icon: '☁️', overlay: 'overlay-clouds-day' },
-      night: { icon: '☁️', overlay: 'overlay-clouds-night' },
+      day: { background: imageAIBanana, icon: '☁️', overlay: 'overlay-clouds-day' },
+      night: { background: imageAIBanana, icon: '☁️', overlay: 'overlay-clouds-night' },
       food: { preText: '구름 낀 날엔 ', items: ['따뜻한 라떼', '핫초코', '카푸치노'], postText: '와 함께.' }
     },
     Rain: {
-      day: { icon: '🌧️', overlay: 'overlay-rain-day' },
-      night: { icon: '🌧️', overlay: 'overlay-rain-night' },
+      day: { background: imageAIBanana, icon: '🌧️', overlay: 'overlay-rain-day' },
+      night: { background: imageAIBanana, icon: '🌧️', overlay: 'overlay-rain-night' },
       food: { preText: '비 오는 날엔 뜨끈한 ', items: ['칼국수', '수제비', '부침개'], postText: '이죠!' }
     },
     Snow: {
-      day: { icon: '❄️', overlay: 'overlay-snow-day' },
-      night: { icon: '❄️', overlay: 'overlay-snow-night' },
+      day: { background: imageAIBanana, icon: '❄️', overlay: 'overlay-snow-day' },
+      night: { background: imageAIBanana, icon: '❄️', overlay: 'overlay-snow-night' },
       food: { preText: '눈 오는 날엔 ', items: ['따끈한 어묵탕', '달콤한 호떡', '김이 나는 찐빵'], postText: '으로 몸을 녹여보세요.' }
     },
     Thunderstorm: {
-      day: { icon: '⚡️', overlay: 'overlay-thunderstorm' },
-      night: { icon: '⚡️', overlay: 'overlay-thunderstorm' },
+      day: { background: imageAIBanana, icon: '⚡️', overlay: 'overlay-thunderstorm' },
+      night: { background: imageAIBanana, icon: '⚡️', overlay: 'overlay-thunderstorm' },
       food: { preText: '번개 치는 날엔 ', items: ['매운 짬뽕', '따끈한 부대찌개', '치킨에 맥주'], postText: ' 한 잔!' }
     },
     Default: {
-      day: { icon: '🤔', overlay: 'overlay-default' },
-      night: { icon: '🤔', overlay: 'overlay-default' },
+      day: { background: imageAIBanana, icon: '🤔', overlay: 'overlay-default' },
+      night: { background: imageAIBanana, icon: '🤔', overlay: 'overlay-default' },
       food: { preText: '오늘 날씨엔 ', items: ['든든한 국밥', '매콤한 떡볶이', '샌드위치'], postText: '이 좋겠네요.' }
     },
   };
@@ -100,7 +104,7 @@
 
 </script>
 
-<div class="w-full h-full transition-all duration-1000 relative">
+<div class="w-full h-full bg-cover bg-center transition-all duration-1000 relative" style="background-image: url({weatherLook.background})">
   {#if condition === 'Snow'}<Snowfall />{/if}
   {#if condition === 'Rain' || condition === 'Thunderstorm'}<Rainfall />{/if}
   {#if condition === 'Clouds'}<Clouds />{/if}
@@ -243,7 +247,7 @@
   .overlay-rain-day { background-color: rgba(0, 10, 20, 0.6); backdrop-filter: brightness(0.8) blur(2px); }
   .overlay-thunderstorm, .overlay-rain-night { background-color: rgba(10, 5, 20, 0.7); backdrop-filter: brightness(0.6) saturate(1.2); }
   .overlay-snow-day { background-color: rgba(220, 225, 230, 0.3); backdrop-filter: brightness(1.05); }
-  .overlay-clear-night { background-color: rgba(0, 5, 15,.5); backdrop-filter: brightness(0.9); }
+  .overlay-clear-night { background-color: rgba(0, 5, 15, 0.5); backdrop-filter: brightness(0.9); }
   .overlay-clouds-night { background-color: rgba(10, 20, 30, 0.6); backdrop-filter: brightness(0.8); }
   .overlay-snow-night { background-color: rgba(10, 15, 25, 0.5); backdrop-filter: brightness(0.95); }
   .overlay-default { background-color: rgba(0, 0, 0, 0.3); }
