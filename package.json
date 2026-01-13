@@ -1,5 +1,5 @@
 {
-  "name": "weather-app",
+  "name": "weather-eat1",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "deploy": "wrangler pages deploy dist"
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
