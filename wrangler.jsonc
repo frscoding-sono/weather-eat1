@@ -1,5 +1,5 @@
 {
-    "name": "weather-eat1",
+    "name": "weather-app",
     "compatibility_date": "2026-01-13",
     "assets": {
         "directory": "./dist"
